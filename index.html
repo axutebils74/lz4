@@ -1,0 +1,47 @@
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>lz4 compress</title>
+<script>
+    onerror = function (e){
+        div.innerHTML = e
+    }
+    onunhandledrejection = function(e){
+        div.innerHTML = e.reason
+    }
+</script>
+<script src="lz4.js"></script>
+<h3>压缩</h3>
+<input type="file" id="ff">
+<hr>
+<h3>解压</h3><input type="file" id="ff1">
+<br>
+<div id="div"></div>
+<script>
+ff.onchange =  function(){
+    if(!ff.value) return;
+    e =  ff.files[0];
+    f = new FileReader();
+    f.onload = function(){
+        a = compress(new Uint8Array(f.result));
+        let aa = document.createElement('a');
+        aa.href = URL.createObjectURL(new Blob([a]));
+        aa.download = e.name +  '.lz4'
+        aa.click();
+    }
+    f.readAsArrayBuffer(e);
+}    
+ff1.onchange = function(){
+    if(!ff1.value) return;
+    e =  ff1.files[0];
+    f = new FileReader();
+    f.onload = function(){
+        a = decompress(new Uint8Array(f.result));
+        let aa = document.createElement('a');
+        aa.href = URL.createObjectURL(new Blob([a]));
+        aa.download = e.name.replace(/\.lz4$/,"");
+        aa.click();
+    }
+    f.readAsArrayBuffer(e);
+}
+</script>
