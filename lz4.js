@@ -301,18 +301,36 @@ function decompressBound (src) {
 
   // Get content size
   if (useContentSize) {
-    return readU64(src, sIndex);
+    var k = readU64(src, sIndex);
+    if(sIndex + k + 24 > src.length) return k;
+    sIndex+=8;
   }
 
   // Checksum
   sIndex++;
-
+  var obj = {}
+  var bac=7;
   // Read blocks.
   var maxSize = 0;
   while (true) {
     var blockSize = readU32(src, sIndex);
     sIndex += 4;
-
+    if(blockSize) obj[blockSize] = true
+    if (blockSize === 0 && sIndex + 20 < src.length) {
+      var i;
+      if(obj[readU32(src, sIndex + bac)]) {
+        sIndex+=bac
+        continue;
+      }
+      for(i = 7;i < 19;i++){
+        if(obj[readU32(src, sIndex + i)]){
+          break
+        }
+      }
+      bac = i;
+      sIndex+=i
+      continue;
+    }
     if (blockSize & bsUncompressed) {
       blockSize &= ~bsUncompressed;
       maxSize += blockSize;
@@ -563,14 +581,30 @@ function decompressFrame (src, dst) {
   }
 
   sIndex++;
-
+  var obj = {}
+  var bac = 7;
   // Read blocks.
   while (true) {
     var compSize;
 
     compSize = readU32(src, sIndex);
     sIndex += 4;
-
+    if(compSize) obj[compSize] = true
+    if (compSize === 0 && sIndex + 20 < src.length) {
+      var i;
+      if(obj[readU32(src, sIndex + bac)]) {
+        sIndex+=bac
+        continue;
+      }
+      for(i = 7;i < 19;i++){
+        if(obj[readU32(src, sIndex + i)]){
+          break
+        }
+      }
+      bac = i;
+      sIndex+=i
+      continue;
+    }
     if (compSize === 0) {
       break;
     }
