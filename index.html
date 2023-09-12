@@ -1,4 +1,3 @@
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>lz4 compress</title>
@@ -29,6 +28,9 @@ ff.onchange =  function(){
         aa.download = e.name +  '.lz4'
         aa.click();
     }
+    f.onerror = function(e){
+        div.innerHTML = f.error
+    }
     f.readAsArrayBuffer(e);
 }    
 ff1.onchange = function(){
@@ -41,6 +43,9 @@ ff1.onchange = function(){
         aa.href = URL.createObjectURL(new Blob([a]));
         aa.download = e.name.replace(/\.lz4$/,"");
         aa.click();
+    }
+    f.onerror = function(e){
+        div.innerHTML = f.error
     }
     f.readAsArrayBuffer(e);
 }
